@@ -1,4 +1,6 @@
 import android.app.Application
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +14,9 @@ import retrofit2.http.POST
 import retrofit2.Call
 
 // Data class for the login request
-data class SignInRequest(val email: String, val password: String)
+data class SignInRequest(
+    val email: String,
+    val password: String)
 
 // Retrofit API service interface for login
 interface ApiService1 {
@@ -21,24 +25,20 @@ interface ApiService1 {
 }
 
 // AppState to manage user authentication state across the app
-class AppState(application: Application) : AndroidViewModel(application) {
-    fun logIn() {
-        // This function would typically update the app-wide logged-in state
-    }
-}
 
-class SignInViewModel(private val appState: AppState) : ViewModel() {
+
+class SignInViewModel: ViewModel() {
     private val _email = MutableStateFlow("")
     private val _password = MutableStateFlow("")
     private val _showAlert = MutableStateFlow(false)
     private val _statusMessage = MutableStateFlow("")
     private val _authenticationSuccess = MutableStateFlow(false)
 
-    val email: StateFlow<String> = _email.asStateFlow()
-    val password: StateFlow<String> = _password.asStateFlow()
-    val showAlert: StateFlow<Boolean> = _showAlert.asStateFlow()
-    val statusMessage: StateFlow<String> = _statusMessage.asStateFlow()
-    val authenticationSuccess: StateFlow<Boolean> = _authenticationSuccess.asStateFlow()
+    val email: StateFlow<String> = _email
+    val password: StateFlow<String> = _password
+    val showAlert: StateFlow<Boolean> = _showAlert
+    val statusMessage: StateFlow<String> = _statusMessage
+    val authenticationSuccess: StateFlow<Boolean> = _authenticationSuccess
 
     // Retrofit setup
     private val retrofit: Retrofit = Retrofit.Builder()
@@ -56,7 +56,6 @@ class SignInViewModel(private val appState: AppState) : ViewModel() {
                 if (response.isSuccess) {
                     _statusMessage.value = "Authentication successful."
                     _authenticationSuccess.value = true
-                    appState.logIn()
                 } else {
                     _statusMessage.value = "Authentication failed."
                     _authenticationSuccess.value = false
@@ -85,12 +84,4 @@ class SignInViewModel(private val appState: AppState) : ViewModel() {
     }
 }
 
-class SignInViewModelFactory(private val appState: AppState) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SignInViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return SignInViewModel(appState) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+

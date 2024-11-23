@@ -1,9 +1,9 @@
 package com.example.c2capp
 
 import SignInView
-import SignInViewModel
 import SignUpView
 import SignUpViewModel
+import SignInViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -48,7 +48,7 @@ fun AppContent() {
                 popUpTo("auth") { inclusive = true }
             }
         } else {
-            navController.navigate("signUp") {
+            navController.navigate("signIn") {
                 popUpTo("auth") { inclusive = true }
             }
         }

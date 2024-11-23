@@ -38,11 +38,7 @@ fun HomeView() {
     }
 }
 
-@Composable
-fun HomeFirstPageView() {
-    // Implement the UI for the "Today" tab
-    Text("Content for Today")
-}
+
 
 @Composable
 fun HomeSecondPageView() {

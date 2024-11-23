@@ -8,6 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
+import java.util.Objects
 
 // Data class for the request body
 data class RegisterRequest(
@@ -15,11 +16,16 @@ data class RegisterRequest(
     val Password: String,
     val ConfirmPassword: String
 )
+data class RegisterResponse(
+    val status: String,
+    val message: String
+)
+
 
 // Retrofit API service interface
 interface ApiService {
     @POST("account/register")
-    suspend fun register(@Body request: RegisterRequest): String
+    suspend fun register(@Body request: RegisterRequest): RegisterResponse
 }
 
 class SignUpViewModel : ViewModel() {
@@ -58,10 +64,11 @@ class SignUpViewModel : ViewModel() {
         viewModelScope.launch {
             val request = RegisterRequest(email.value, password.value, confirmPassword.value)
             try {
-                val responseBody = apiService.register(request)
-                _statusMessage.value = "Registration successful"
-                _registrationSuccess.value = true
-                println("Response Body: $responseBody")
+                val response = apiService.register(request)
+                _statusMessage.value = response.message
+                _registrationSuccess.value = response.status == "success"
+                println("Response Body: $response")
+
             } catch (e: HttpException) {
                 _statusMessage.value = "Error: ${e.message()}"
                 _registrationSuccess.value = false
